@@ -11,7 +11,7 @@ class Model {
    * Assume amount and payment are in cents.
    */
   step(amount, payment) {
-    let left = amount - payment;
+    const left = amount - payment;
     if (left <= 0) { // if payed off
       return left;
     } else {
@@ -57,20 +57,16 @@ class Model {
   }
 
   calc_monthly_payment() {
-    let monthly_payment = this.find_payment_plan();
-    let { amount, months } = this.run_payment_plan(monthly_payment);
-    let total_payment = months * monthly_payment + amount;
-
-    // adjust to dollar
-    monthly_payment /= 100;
-    total_payment /= 100;
+    const monthly_payment = this.find_payment_plan() / 100;
+    const { amount, months } = this.run_payment_plan(monthly_payment);
+    const total_payment = (months * monthly_payment + amount) / 100;
     return { monthly_payment, total_payment };
   }
 
   run() {
-    let total_principal = (this.loan_amount - this.down_payment) / 100;
+    const total_principal = (this.loan_amount - this.down_payment) / 100;
     let { monthly_payment, total_payment } = this.calc_monthly_payment();
-    let total_interest = total_payment - total_principal;
+    const total_interest = total_payment - total_principal;
     if (monthly_payment > total_payment) {
       monthly_payment = total_payment;
     }

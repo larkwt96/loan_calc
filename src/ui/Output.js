@@ -1,5 +1,4 @@
 import React from 'react';
-//import ProgressBar from 'react-bootstrap/ProgressBar';
 
 class Output extends React.Component {
   renderResults() {
@@ -64,24 +63,12 @@ class Output extends React.Component {
     );
   }
 
-  renderCalculating() {
-    return (
-      <React.Fragment>
-        Calculating..
-      </React.Fragment>
-    );
-  }
-
   render() {
     let results;
     if (this.props.results === undefined) {
       results = this.renderBlank();
     } else {
-      if (this.props.results.done) {
-        results = this.renderResults();
-      } else {
-        results = this.renderCalculating();
-      }
+      results = this.renderResults();
     }
     return (
       <React.Fragment>

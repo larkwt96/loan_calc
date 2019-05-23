@@ -42,19 +42,9 @@ class Input extends React.Component {
   calculate(event) {
     event.preventDefault();
     const { loan_amount = 0, loan_rate = 0, down_payment = 0, minimum_payment = 50, loan_term = 120 } = this.state;
-    const promise = new Promise((resolve, reject) => {
-      this.props.displayResults({ done: false });
-      try {
-        const model = new Model({ loan_amount, loan_rate, down_payment, minimum_payment, loan_term });
-        resolve(model);
-      } catch (err) {
-        reject(err);
-      }
-    });
-    promise.then((model) => {
-      this.props.displayResults({ done: true, ...model.run() });
-    }).catch(() => {
-      this.props.displayResults(undefined);
+    const model = new Model({ loan_amount, loan_rate, down_payment, minimum_payment, loan_term });
+    Promise.resolve().then(() => {
+      this.props.displayResults(model.run());
     });
   }
 
