@@ -39,7 +39,8 @@ class Input extends React.Component {
     this.setState({ loan_term: value });
   }
 
-  calculate() {
+  calculate(event) {
+    event.preventDefault();
     const { loan_amount = 0, loan_rate = 0, down_payment = 0, minimum_payment = 50, loan_term = 120 } = this.state;
     const promise = new Promise((resolve, reject) => {
       this.props.displayResults({ done: false });
@@ -130,13 +131,12 @@ class Input extends React.Component {
           {/*<small className="form-text text-muted">Minimum monthly payments (in dollars).</small>*/}
         </div>
       </React.Fragment>
-
     );
   }
 
   render() {
     return (
-      <React.Fragment>
+      <form onSubmit={(event) => this.calculate(event)}>
         <div className="card-header">
           <h3>Inputs</h3>
         </div>
@@ -144,9 +144,9 @@ class Input extends React.Component {
           {this.body()}
         </div>
         <div className="card-footer">
-          <button onClick={() => this.calculate()} className="btn btn-outline-primary">Calculate</button>
+          <button type="submit" className="btn btn-outline-primary">Calculate</button>
         </div>
-      </React.Fragment>
+      </form>
     );
   }
 }
