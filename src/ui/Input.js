@@ -31,7 +31,7 @@ class Input extends React.Component {
 
   calculate() {
     let { loan_amount = 0, loan_rate = 0, down_payment = 0, minimum_payment = 50 } = this.state;
-    let model = new Model(loan_amount, loan_rate, down_payment, minimum_payment);
+    let model = new Model({ loan_amount, loan_rate, down_payment, minimum_payment });
     this.props.displayResults(model.run());
   }
 

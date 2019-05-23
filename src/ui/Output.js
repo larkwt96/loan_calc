@@ -11,21 +11,21 @@ class Output extends React.Component {
     let valueClass = "h7";
     return (
       <React.Fragment>
-        <ul class="list-group">
+        <ul className="list-group">
           <li className="list-group-item">
-            <ul class="list-group list-group-flush">
-              <li class="list-group-item">
+            <ul className="list-group list-group-flush">
+              <li className="list-group-item">
                 <p className="h4">Total Payment</p>
                 <p className={valueClass}>{total_payment}</p>
               </li>
-              <li class="list-group-item">
+              <li className="list-group-item">
                 <p className="h4">Monthly Payment</p>
                 <p className={valueClass}>{monthly_payment}</p>
               </li>
             </ul>
           </li>
-          <li class="list-group-item">
-            <table class="table">
+          <li className="list-group-item">
+            <table className="table">
               <thead>
                 <tr>
                   <th scope="col">Total Principal</th>
