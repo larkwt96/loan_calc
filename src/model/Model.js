@@ -57,10 +57,10 @@ class Model {
   }
 
   calc_monthly_payment() {
-    const monthly_payment = this.find_payment_plan() / 100;
+    const monthly_payment = this.find_payment_plan();
     const { amount, months } = this.run_payment_plan(monthly_payment);
-    const total_payment = (months * monthly_payment + amount) / 100;
-    return { monthly_payment, total_payment };
+    const total_payment = months * monthly_payment + amount;
+    return { monthly_payment: monthly_payment / 100, total_payment: total_payment / 100 };
   }
 
   run() {
