@@ -1,12 +1,15 @@
 class Model {
   constructor({ loan_amount, loan_rate, down_payment, minimum_payment, loan_term = 120 }) {
-    loan_amount = loan_amount[0];
-    loan_rate = loan_rate[0];
-    this.loan_amount = Math.ceil(loan_amount * 100);
-    this.loan_rate = loan_rate / 100 / 12;  // loan_rate is given as percent, converted to decimal per month
-    this.down_payment = Math.ceil(down_payment * 100);
-    this.minimum_payment = Math.ceil(minimum_payment * 100);
+    this.loan_amount = loan_amount.map(v => this.toCent(v))[0];
+    // loan_rate is given percent per year, converted to decimal per month
+    this.loan_rate = loan_rate.map(v => v / 100 / 12)[0];
+    this.down_payment = this.toCent(down_payment);
+    this.minimum_payment = this.toCent(minimum_payment);
     this.loan_term = Math.ceil(loan_term);
+  }
+
+  toCent(amount) {
+    return Math.ceil(amount * 100);
   }
 
   /**
