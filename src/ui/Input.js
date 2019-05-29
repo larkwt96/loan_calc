@@ -1,5 +1,6 @@
 import React from 'react';
-import Model from '../model/Model'
+import Model from '../model/Model';
+import Loans from './Loans';
 
 class Input extends React.Component {
   constructor(props) {
@@ -19,15 +20,6 @@ class Input extends React.Component {
     } else {
       return Math.floor(parseFloat(amount) * 100) / 100;
     }
-  }
-
-  updateRate(loan_rate) {
-    if (loan_rate === "") {
-      loan_rate = undefined;
-    } else {
-      loan_rate = parseFloat(loan_rate);
-    }
-    this.setState({ loan_rate });
   }
 
   setLoanTerm(value) {
@@ -56,32 +48,12 @@ class Input extends React.Component {
       loan_term = "" } = this.state;
     return (
       <React.Fragment>
-        <div className="form-group">
-          <label>Loan Balance</label>
-          <div className="input-group mb-3 col-xl-8 col-lg-10">
-            <div className="input-group-prepend">
-              <span className="input-group-text">$</span>
-            </div>
-            <input type="number" step=".01" className="form-control"
-              placeholder="0" value={loan_amount}
-              onChange={({ currentTarget: { value } }) => this.setState({ loan_amount: this.parseDollar(value) })} />
-          </div>
-          {/*<small className="form-text text-muted">Input loan amount (in dollars).</small>*/}
-        </div>
-
-        <div className="form-group">
-          <label>Loan Interest Rate (%)</label>
-          <div className="input-group mb-3 col-xl-8 col-lg-10">
-            <input type="number" step=".01" className="form-control"
-              placeholder="0" value={loan_rate}
-              onChange={(event) => this.updateRate(event.currentTarget.value)} />
-            <div className="input-group-append">
-              <span className="input-group-text">%</span>
-            </div>
-          </div>
-          {/*<small className="form-text text-muted">Input loan rate (in percentage).</small>*/}
-        </div>
-
+        <Loans
+          loan_amount={loan_amount}
+          loan_rate={loan_rate}
+          parseDollar={this.parseDollar}
+          setLoanRate={(loan_rate) => this.setState({ loan_rate })}
+          setLoanAmount={(loan_amount) => this.setState({ loan_amount })} />
         <div className="form-group">
           <label>Down Payment</label>
           <div className="input-group mb-3 col-xl-8 col-lg-10">
