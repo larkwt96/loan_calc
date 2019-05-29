@@ -1,5 +1,5 @@
 import React from 'react';
-import Model from '../model/Model';
+import Model from '../../model/Model';
 import Loans from './Loans';
 
 class Input extends React.Component {
