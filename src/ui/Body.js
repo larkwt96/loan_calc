@@ -14,12 +14,12 @@ class Body extends React.Component {
     return (
       <div className="container text-center">
         <div className="row">
-          <div className="col-md-6 col-sm-12">
+          <div className="col-12 col-lg-6">
             <div className="card">
               <Input displayResults={(results) => this.setState({ results })} />
             </div>
           </div>
-          <div className="col-md-6 col-sm-12">
+          <div className="col-12 col-lg-6">
             <div className="card">
               <Output results={this.state.results} clearResults={() => this.setState({ results: undefined })} />
             </div>
