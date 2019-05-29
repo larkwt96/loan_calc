@@ -3,16 +3,16 @@ import Model from '../../model/Model';
 import Loans from './Loans';
 
 class Input extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      loan_amount: undefined,
-      loan_rate: undefined,
-      down_payment: undefined,
-      minimum_payment: undefined,
-      loan_term: undefined,
-    };
-  }
+  defaultDownPayment = 0;
+  defaultMinimumPayment = 50;
+  defaultLoanTerm = 120;
+  state = {
+    loan_amount: undefined,
+    loan_rate: undefined,
+    down_payment: undefined,
+    minimum_payment: undefined,
+    loan_term: undefined,
+  };
 
   parseDollar(amount) {
     if (amount === "") {
@@ -33,7 +33,10 @@ class Input extends React.Component {
 
   calculate(event) {
     event.preventDefault();
-    const { loan_amount = 0, loan_rate = 0, down_payment = 0, minimum_payment = 50, loan_term = 120 } = this.state;
+    const { loan_amount = [0], loan_rate = [0],
+      down_payment = this.defaultDownPayment,
+      minimum_payment = this.defaultMinimumPayment,
+      loan_term = this.defaultLoanTerm } = this.state;
     const model = new Model({ loan_amount, loan_rate, down_payment, minimum_payment, loan_term });
     Promise.resolve().then(() => {
       this.props.displayResults(model.run());
@@ -41,8 +44,7 @@ class Input extends React.Component {
   }
 
   body() {
-    const { loan_amount = "",
-      loan_rate = "",
+    const { loan_amount, loan_rate,
       down_payment = "",
       minimum_payment = "",
       loan_term = "" } = this.state;
@@ -61,7 +63,7 @@ class Input extends React.Component {
               <span className="input-group-text">$</span>
             </div>
             <input type="number" step=".01" className="form-control"
-              placeholder="0" value={down_payment}
+              placeholder={this.defaultDownPayment} value={down_payment}
               onChange={({ currentTarget: { value } }) => this.setState({ down_payment: this.parseDollar(value) })} />
           </div>
           {/*<small className="form-text text-muted">Amount payed upfront (in dollars).</small>*/}
@@ -74,7 +76,7 @@ class Input extends React.Component {
               <span className="input-group-text">$</span>
             </div>
             <input type="number" step=".01" className="form-control"
-              placeholder="50" value={minimum_payment}
+              placeholder={this.defaultMinimumPayment} value={minimum_payment}
               onChange={({ currentTarget: { value } }) => this.setState({ minimum_payment: this.parseDollar(value) })} />
           </div>
           {/*<small className="form-text text-muted">Minimum monthly payments (in dollars).</small>*/}
@@ -87,7 +89,7 @@ class Input extends React.Component {
               <span className="input-group-text">$</span>
             </div>
             <input type="number" step="1" className="form-control"
-              placeholder="120" value={loan_term}
+              placeholder={this.defaultLoanTerm} value={loan_term}
               onChange={({ currentTarget: { value } }) => this.setLoanTerm(value)} />
           </div>
           {/*<small className="form-text text-muted">Minimum monthly payments (in dollars).</small>*/}

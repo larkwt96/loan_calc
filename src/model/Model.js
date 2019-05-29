@@ -1,5 +1,7 @@
 class Model {
   constructor({ loan_amount, loan_rate, down_payment, minimum_payment, loan_term = 120 }) {
+    loan_amount = loan_amount[0];
+    loan_rate = loan_rate[0];
     this.loan_amount = Math.ceil(loan_amount * 100);
     this.loan_rate = loan_rate / 100 / 12;  // loan_rate is given as percent, converted to decimal per month
     this.down_payment = Math.ceil(down_payment * 100);

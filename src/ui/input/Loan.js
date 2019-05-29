@@ -2,7 +2,7 @@ import React from 'react';
 
 class Loan extends React.Component {
   render() {
-    const { loan_amount, loan_rate, updateLoanAmount, updateLoanRate } = this.props;
+    const { loan_amount = "", loan_rate = "", updateLoanAmount, updateLoanRate } = this.props;
     return (
       <React.Fragment>
         <div className="form-group">
