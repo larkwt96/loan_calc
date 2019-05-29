@@ -7,8 +7,8 @@ class Input extends React.Component {
   defaultMinimumPayment = 50;
   defaultLoanTerm = 120;
   state = {
-    loan_amount: undefined,
-    loan_rate: undefined,
+    loan_amount: [undefined],
+    loan_rate: [undefined],
     down_payment: undefined,
     minimum_payment: undefined,
     loan_term: undefined,
@@ -33,11 +33,15 @@ class Input extends React.Component {
 
   calculate(event) {
     event.preventDefault();
-    const { loan_amount = [0], loan_rate = [0],
+    const { loan_amount, loan_rate,
       down_payment = this.defaultDownPayment,
       minimum_payment = this.defaultMinimumPayment,
       loan_term = this.defaultLoanTerm } = this.state;
-    const model = new Model({ loan_amount, loan_rate, down_payment, minimum_payment, loan_term });
+    const model = new Model({
+      loan_amount: loan_amount.map((e = 0) => e),
+      loan_rate: loan_rate.map((e = 0) => e),
+      down_payment, minimum_payment, loan_term
+    });
     Promise.resolve().then(() => {
       this.props.displayResults(model.run());
     });
