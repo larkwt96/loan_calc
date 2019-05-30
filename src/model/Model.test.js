@@ -1,8 +1,9 @@
 import Model from './Model';
+import { tsExternalModuleReference } from '@babel/types';
 
 const loan = {
-  loan_amount: [20000],
-  loan_rate: [4.55],
+  loan_amounts: [20000],
+  loan_rates: [4.55],
   down_payment: 0,
   minimum_payment: 50,
   loan_term: 120,
@@ -41,12 +42,83 @@ it('calculates total months accurately', () => {
 });
 
 const multi_loan = {
-  loan_amount: [20000],
-  loan_rate: [4.55],
+  loan_amounts: [5000, 4000, 2000, 1000, 7000],
+  loan_rates: [4.55, 5.44, 2.33, 7.00, 2.0],
   down_payment: 0,
   minimum_payment: 50,
   loan_term: 120,
 };
-const multi_model = new Model(loan);
+const multi_model = new Model(multi_loan);
 const multi_model_plan = model.run();
 const multi_model_run = model.run_payment_plan(model_plan.monthly_payment * 100);
+
+
+test('getTargetLoan works', () => {
+  const amounts = multi_model.loan_amounts.slice();
+  expect(multi_model.getTargetLoan()).toBe(3);
+  amounts[3] = 0;
+  expect(multi_model.getTargetLoan(amounts)).toBe(1);
+});
+
+test('make_payment pay part loan works', () => {
+  const { loan_amounts } = multi_model;
+  let amounts = multi_model.make_payment(loan_amounts.slice(), 500 * 100);
+  expect(amounts[3]).toBe(500 * 100);
+});
+
+test('make_payment almost overflow works', () => {
+  const { loan_amounts } = multi_model;
+  let amounts = multi_model.make_payment(loan_amounts.slice(), 1000 * 100);
+  expect(amounts[3]).toBe(0);
+  expect(amounts[1]).toBe(4000 * 100);
+})
+
+test('make_payment overflow works', () => {
+  const { loan_amounts } = multi_model;
+  let amounts = multi_model.make_payment(loan_amounts.slice(), 1500 * 100);
+  expect(amounts[3]).toBe(0);
+  expect(amounts[1]).toBe(3500 * 100);
+})
+
+test('make_payment double overflow works', () => {
+  const { loan_amounts } = multi_model;
+  let amounts = multi_model.make_payment(loan_amounts.slice(), 7500 * 100);
+  expect(amounts[3]).toBe(0);
+  expect(amounts[1]).toBe(0);
+  expect(amounts[0]).toBe(2500 * 100);
+})
+
+test('make_payment finish works', () => {
+  const { loan_amounts } = multi_model;
+  const amounts = loan_amounts.slice();
+  const total = multi_model.sum(amounts);
+  const finals = multi_model.make_payment(amounts, total);
+  // all zero
+  for (const amount of finals) {
+    expect(amount).toBe(0);
+  }
+})
+
+test('make_payment overflow finish works', () => {
+  const { loan_amounts } = multi_model;
+  const amounts = loan_amounts.slice();
+  const total = multi_model.sum(amounts);
+  const finals = multi_model.make_payment(amounts, total + 47);
+  let found = false;
+  // all but one zero
+  for (const amount of finals) {
+    if (amount !== 0) {
+      expect(found).toBeFalsy();
+      expect(amount).toBe(-47);
+      found = true;
+    }
+  }
+});
+
+test('make_payment overflow finish works for single loan', () => {
+  const { loan_amounts } = model;
+  const amounts = loan_amounts.slice();
+  const total = model.sum(amounts);
+  const finals = model.make_payment(amounts, total + 47);
+  expect(finals[0]).toBe(-47);
+});
