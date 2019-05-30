@@ -1,5 +1,4 @@
 import Model from './Model';
-import { tsExternalModuleReference } from '@babel/types';
 
 const loan = {
   loan_amounts: [20000],
@@ -52,6 +51,14 @@ const multi_model = new Model(multi_loan);
 const multi_model_plan = model.run();
 const multi_model_run = model.run_payment_plan(model_plan.monthly_payment * 100);
 
+
+test('multi plan is defined', () => {
+  expect(multi_model_plan).toBeDefined();
+});
+
+test('multi run is defined', () => {
+  expect(multi_model_run).toBeDefined();
+});
 
 test('getTargetLoan works', () => {
   const amounts = multi_model.loan_amounts.slice();
