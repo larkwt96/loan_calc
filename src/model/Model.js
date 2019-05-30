@@ -6,7 +6,7 @@ class Model {
     //console.log({ this_loan_rates: this.loan_rates, loan_rates })
     this.down_payment = this.toCent(down_payment);
     this.minimum_payment = this.toCent(minimum_payment);
-    this.loan_term = Math.ceil(loan_term);
+    this.loan_term = Math.max(1, Math.ceil(loan_term));
   }
 
   toCent(amount) {
@@ -46,14 +46,13 @@ class Model {
    */
   step(amounts, payment) {
     const postPayment = this.make_payment(amounts.slice(), payment);
-    amounts = postPayment.map((currentBalance, index) => {
+    return postPayment.map((currentBalance, index) => {
       if (currentBalance <= 0) {
         return currentBalance;
       } else {
         return Math.ceil(currentBalance + amounts[index] * this.loan_rates[index])
       }
     });
-    return amounts;
   }
 
   make_payment(amounts, payment) {
@@ -76,7 +75,7 @@ class Model {
     let amounts = this.make_payment(this.loan_amounts.slice(), this.down_payment);
     let months = 0;
     if (this.sum(amounts) <= 0) {
-      return { amounts, months };
+      return { amount: this.sum(amounts), months };
     }
     for (months = 1; months <= this.loan_term; months++) {
       amounts = this.step(amounts, monthly_payment);
@@ -100,7 +99,7 @@ class Model {
     }
     let step = 1e5;
     while (step > 1e-1) {
-      while (this.run_payment_plan(monthly_payment + step).amount > 0 && monthly_payment < 70000) {
+      while (this.run_payment_plan(monthly_payment + step).amount > 0) {
         // adjust monthly payment if not high enough
         monthly_payment += step;
       }
@@ -114,23 +113,25 @@ class Model {
   calc_monthly_payment() {
     const monthly_payment = this.find_payment_plan();
     const { amount, months } = this.run_payment_plan(monthly_payment);
+
     const total_payment = months * monthly_payment + amount;
     return { monthly_payment: monthly_payment / 100, total_payment: total_payment / 100 };
   }
 
   run() {
-    const total_principal = (this.loan_amounts - this.down_payment) / 100;
+    const total_principal = (this.sum(this.loan_amounts) - this.down_payment) / 100;
     let { monthly_payment, total_payment } = this.calc_monthly_payment();
     const total_interest = total_payment - total_principal;
     if (monthly_payment > total_payment) {
       monthly_payment = total_payment;
     }
-    return {
+    const results = {
       monthly_payment,
       total_principal,
       total_interest,
       total_payment,
     };
+    return results;
   }
 }
 
