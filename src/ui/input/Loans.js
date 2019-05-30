@@ -8,8 +8,8 @@ class Loans extends React.Component {
     } else {
       loan_rate = parseFloat(loan_rate);
     }
-    this.props.loan_rate[index] = loan_rate;
-    this.props.setLoanRate(this.props.loan_rate);
+    this.props.loan_rates[index] = loan_rate;
+    this.props.setLoanRate(this.props.loan_rates);
   }
 
   updateLoanAmount(index, loan_amount) {
@@ -18,13 +18,13 @@ class Loans extends React.Component {
     } else {
       loan_amount = this.props.parseDollar(loan_amount);
     }
-    this.props.loan_amount[index] = loan_amount;
-    this.props.setLoanAmount(this.props.loan_amount);
+    this.props.loan_amounts[index] = loan_amount;
+    this.props.setLoanAmount(this.props.loan_amounts);
   }
 
   buildLoans() {
-    const { loan_amount, loan_rate } = this.props;
-    return loan_amount.map((amount, index) => this.buildLoan(amount, loan_rate[index], index));
+    const { loan_amounts, loan_rates } = this.props;
+    return loan_amounts.map((amount, index) => this.buildLoan(amount, loan_rates[index], index));
   }
 
   buildLoan(loan_amount, loan_rate, index) {
@@ -40,20 +40,20 @@ class Loans extends React.Component {
   }
 
   add() {
-    const { loan_amount, loan_rate } = this.props;
-    loan_amount.push(undefined);
-    loan_rate.push(undefined);
-    this.props.setLoanAmount(loan_amount);
-    this.props.setLoanRate(loan_rate);
+    const { loan_amounts, loan_rates } = this.props;
+    loan_amounts.push(undefined);
+    loan_rates.push(undefined);
+    this.props.setLoanAmount(loan_amounts);
+    this.props.setLoanRate(loan_rates);
   }
 
   delete() {
-    const { loan_amount, loan_rate } = this.props;
-    if (loan_amount.length === 1) {
+    const { loan_amounts, loan_rates } = this.props;
+    if (loan_amounts.length === 1) {
       return this.clear();
     }
-    this.props.setLoanAmount(loan_amount.slice(0, -1));
-    this.props.setLoanRate(loan_rate.slice(0, -1));
+    this.props.setLoanAmount(loan_amounts.slice(0, -1));
+    this.props.setLoanRate(loan_rates.slice(0, -1));
   }
 
   clear() {

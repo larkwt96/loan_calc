@@ -7,8 +7,8 @@ class Input extends React.Component {
   defaultMinimumPayment = 50;
   defaultLoanTerm = 120;
   state = {
-    loan_amount: [undefined],
-    loan_rate: [undefined],
+    loan_amounts: [undefined],
+    loan_rates: [undefined],
     down_payment: undefined,
     minimum_payment: undefined,
     loan_term: undefined,
@@ -33,13 +33,13 @@ class Input extends React.Component {
 
   calculate(event) {
     event.preventDefault();
-    const { loan_amount, loan_rate,
+    const { loan_amounts, loan_rates,
       down_payment = this.defaultDownPayment,
       minimum_payment = this.defaultMinimumPayment,
       loan_term = this.defaultLoanTerm } = this.state;
     const model = new Model({
-      loan_amount: loan_amount.map((e = 0) => e),
-      loan_rate: loan_rate.map((e = 0) => e),
+      loan_amounts: loan_amounts.map((e = 0) => e),
+      loan_rates: loan_rates.map((e = 0) => e),
       down_payment, minimum_payment, loan_term
     });
     Promise.resolve().then(() => {
@@ -48,18 +48,18 @@ class Input extends React.Component {
   }
 
   body() {
-    const { loan_amount, loan_rate,
+    const { loan_amounts, loan_rates,
       down_payment = "",
       minimum_payment = "",
       loan_term = "" } = this.state;
     return (
       <React.Fragment>
         <Loans
-          loan_amount={loan_amount}
-          loan_rate={loan_rate}
+          loan_amounts={loan_amounts}
+          loan_rates={loan_rates}
           parseDollar={this.parseDollar}
-          setLoanRate={(loan_rate) => this.setState({ loan_rate })}
-          setLoanAmount={(loan_amount) => this.setState({ loan_amount })} />
+          setLoanRate={(loan_rates) => this.setState({ loan_rates })}
+          setLoanAmount={(loan_amounts) => this.setState({ loan_amounts })} />
         <div className="form-group">
           <label>Down Payment</label>
           <div className="input-group mb-3 col-xl-8 col-lg-10">
