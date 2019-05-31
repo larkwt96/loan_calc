@@ -129,3 +129,103 @@ test('make_payment overflow finish works for single loan', () => {
   const finals = model.make_payment(amounts, total + 47);
   expect(finals[0]).toBe(-47);
 });
+
+it('handles zero case', () => {
+  const loan = {
+    loan_amounts: [0],
+    loan_rates: [4.55],
+    down_payment: 0,
+    minimum_payment: 50,
+    loan_term: 120,
+  };
+  const model = new Model(loan);
+  const model_plan = model.run();
+  const model_run = model.run_payment_plan(model_plan.monthly_payment * 100);
+  expect(model_plan.monthly_payment).toBeCloseTo(0, 2);
+  expect(model_plan.total_principal).toBeCloseTo(0, 2);
+  expect(model_plan.total_interest).toBeCloseTo(0, 1)
+  expect(model_plan.total_payment).toBeCloseTo(0, 1)
+  const paid = model_run.months * model_plan.monthly_payment + model_run.amount / 100;
+  expect(paid).toBeCloseTo(model_plan.total_payment, 1);
+  expect(model_run.months).toBeCloseTo(0, 5);
+});;
+
+it('handles multi zero case', () => {
+  const loan = {
+    loan_amounts: [0, 0, 0, 0],
+    loan_rates: [4.5, 4.51, 4.53, 4.25],
+    down_payment: 0,
+    minimum_payment: 50,
+    loan_term: 120,
+  };
+  const model = new Model(loan);
+  const model_plan = model.run();
+  const model_run = model.run_payment_plan(model_plan.monthly_payment * 100);
+  expect(model_plan.monthly_payment).toBeCloseTo(0, 2);
+  expect(model_plan.total_principal).toBeCloseTo(0, 2);
+  expect(model_plan.total_interest).toBeCloseTo(0, 1)
+  expect(model_plan.total_payment).toBeCloseTo(0, 1)
+  const paid = model_run.months * model_plan.monthly_payment + model_run.amount / 100;
+  expect(paid).toBeCloseTo(model_plan.total_payment, 1);
+  expect(model_run.months).toBeCloseTo(0, 5);
+});
+
+it('handles min payment enough case', () => {
+  const loan = {
+    loan_amounts: [25, 0, 0, 0],
+    loan_rates: [4.5, 4.51, 4.53, 4.25],
+    down_payment: 0,
+    minimum_payment: 50,
+    loan_term: 120,
+  };
+  const model = new Model(loan);
+  const model_plan = model.run();
+  const model_run = model.run_payment_plan(model_plan.monthly_payment * 100);
+  expect(model_plan.monthly_payment).toBeCloseTo(25, 2);
+  expect(model_plan.total_principal).toBeCloseTo(25, 2);
+  expect(model_plan.total_interest).toBeCloseTo(0, 1)
+  expect(model_plan.total_payment).toBeCloseTo(25, 1)
+  const paid = model_run.months * model_plan.monthly_payment + model_run.amount / 100;
+  expect(paid).toBeCloseTo(model_plan.total_payment, 1);
+  expect(model_run.months).toBeCloseTo(1, 5);
+});
+
+it('handles no min payment small amount case', () => {
+  const loan = {
+    loan_amounts: [25, 0, 0, 0],
+    loan_rates: [4.5, 4.51, 4.53, 4.25],
+    down_payment: 0,
+    minimum_payment: 0,
+    loan_term: 120,
+  };
+  const model = new Model(loan);
+  const model_plan = model.run();
+  const model_run = model.run_payment_plan(model_plan.monthly_payment * 100);
+  expect(model_plan.monthly_payment).toBeLessThan(25);
+  expect(model_plan.total_principal).toBeCloseTo(25, 2);
+  expect(model_plan.total_interest).toBeGreaterThan(0)
+  expect(model_plan.total_payment).toBeGreaterThan(25)
+  const paid = model_run.months * model_plan.monthly_payment + model_run.amount / 100;
+  expect(paid).toBeCloseTo(model_plan.total_payment, 1);
+});
+
+it('handles multi monthly payment where min is enough', () => {
+  // todo
+  const loan = {
+    loan_amounts: [25, 36, 42, 10],
+    loan_rates: [4.5, 4.51, 4.53, 4.25],
+    down_payment: 0,
+    minimum_payment: 50,
+    loan_term: 120,
+  };
+  const model = new Model(loan);
+  const model_plan = model.run();
+  const model_run = model.run_payment_plan(model_plan.monthly_payment * 100);
+  expect(model_plan.monthly_payment).toBeCloseTo(25 + 36 + 42 + 10, 2);
+  expect(model_plan.total_principal).toBeCloseTo(25 + 36 + 42 + 10, 2);
+  expect(model_plan.total_interest).toBeCloseTo(0, 1)
+  expect(model_plan.total_payment).toBeCloseTo(25 + 36 + 42 + 10, 1)
+  const paid = model_run.months * model_plan.monthly_payment + model_run.amount / 100;
+  expect(paid).toBeCloseTo(model_plan.total_payment, 1);
+  expect(model_run.months).toBeCloseTo(1, 5);
+});

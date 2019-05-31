@@ -42,10 +42,32 @@ class Model {
   }
 
   /**
-   * Assume amount and payment are in cents.
+   * pay minimum and return remaining payment amount
+   * 
+   * @param {Array} amounts Stores remaining loan balance
+   * @param {number} payment Amount of payment, assumes capable of paying minimum payments
+   */
+  pay_minimum(amounts, payment) {
+    for (let i = 0; i < amounts.length; i++) {
+      amounts[i] -= this.minimum_payment;
+      payment -= this.minimum_payment;
+      if (amounts[i] < 0) {
+        payment += -amounts[i];
+        amounts[i] = 0;
+      }
+    }
+    return { postMinimum: amounts, remainingPayment: payment };
+  }
+
+  /**
+   * make payment and apply interest
+   * 
+   * @param {Array} amounts Array of loan amounts
+   * @param {number} payment Amount paid
    */
   step(amounts, payment) {
-    const postPayment = this.make_payment(amounts.slice(), payment);
+    const { postMinimum, remainingPayment } = this.pay_minimum(amounts.slice(), payment)
+    const postPayment = this.make_payment(postMinimum, remainingPayment);
     return postPayment.map((currentBalance, index) => {
       if (currentBalance <= 0) {
         return currentBalance;
@@ -55,10 +77,17 @@ class Model {
     });
   }
 
+  /**
+   * Make payment
+   */
   make_payment(amounts, payment) {
     let targetLoan = this.getTargetLoan(amounts);
+    if (targetLoan === -1) {
+      targetLoan = 0;
+    }
     while (targetLoan !== -1 && payment > 0) {
       amounts[targetLoan] -= payment;
+      payment = 0;
       const newTargetLoan = this.getTargetLoan(amounts);
       if (amounts[targetLoan] < 0 && newTargetLoan !== -1) {
         payment = -amounts[targetLoan];
@@ -91,8 +120,10 @@ class Model {
     const total_principal = this.sum(this.loan_amounts) - this.down_payment;
     let monthly_payment = Math.floor(total_principal / this.loan_term);
     // check if minimum payment is solution
-    if (monthly_payment < this.minimum_payment) {
-      monthly_payment = this.minimum_payment;
+    const unpaidLoans = this.loan_amounts.filter((v) => v > 0);
+    const minimum_payment = this.minimum_payment * unpaidLoans.length;
+    if (monthly_payment < minimum_payment) {
+      monthly_payment = minimum_payment;
     }
     if (this.run_payment_plan(monthly_payment).amount <= 0) {
       return monthly_payment;
@@ -113,7 +144,6 @@ class Model {
   calc_monthly_payment() {
     const monthly_payment = this.find_payment_plan();
     const { amount, months } = this.run_payment_plan(monthly_payment);
-
     const total_payment = months * monthly_payment + amount;
     return { monthly_payment: monthly_payment / 100, total_payment: total_payment / 100 };
   }
