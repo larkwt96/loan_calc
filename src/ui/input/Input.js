@@ -6,13 +6,48 @@ class Input extends React.Component {
   defaultDownPayment = 0;
   defaultMinimumPayment = 50;
   defaultLoanTerm = 120;
-  state = {
-    loan_amounts: [undefined],
-    loan_rates: [undefined],
-    down_payment: undefined,
-    minimum_payment: undefined,
-    loan_term: undefined,
+  state = this.loadState()
+
+  initialState() {
+    return {
+      loan_amounts: [undefined],
+      loan_rates: [undefined],
+      down_payment: undefined,
+      minimum_payment: undefined,
+      loan_term: undefined,
+    }
   };
+
+  loadState() {
+    const state = localStorage.getItem('state');
+    if (state === null) {
+      return this.initialState();
+    } else {
+      const stateObject = JSON.parse(state);
+      stateObject.loan_amounts = stateObject.loan_amounts.map((v) => v === null ? undefined : v)
+      stateObject.loan_rates = stateObject.loan_rates.map((v) => v === null ? undefined : v)
+      let fullState = { ...this.initialState(), ...stateObject };
+      console.log({ fullState });
+      return fullState;
+    }
+  }
+
+  isInitialState() {
+    const { down_payment, minimum_payment, loan_term, loan_amounts, loan_rates } = this.state;
+    return down_payment === undefined &&
+      minimum_payment === undefined &&
+      loan_term === undefined &&
+      loan_amounts.length === 1 && loan_amounts[0] === undefined &&
+      loan_rates.length === 1 && loan_rates[0] === undefined;
+  }
+
+  componentDidUpdate() {
+    if (this.isInitialState()) {
+      localStorage.removeItem('state');
+    } else {
+      localStorage.setItem('state', JSON.stringify(this.state));
+    }
+  }
 
   parseDollar(amount) {
     if (amount === "") {
@@ -29,6 +64,10 @@ class Input extends React.Component {
       value = parseInt(value);
     }
     this.setState({ loan_term: value });
+  }
+
+  clear() {
+    this.setState(this.initialState());
   }
 
   calculate(event) {
@@ -68,9 +107,8 @@ class Input extends React.Component {
             </div>
             <input type="number" step=".01" className="form-control"
               placeholder={this.defaultDownPayment} value={down_payment}
-              onChange={({ currentTarget: { value } }) => this.setState({ down_payment: this.parseDollar(value) })} />
+              onChange={(event) => this.setState({ down_payment: this.parseDollar(event.currentTarget.value) })} />
           </div>
-          {/*<small className="form-text text-muted">Amount payed upfront (in dollars).</small>*/}
         </div>
 
         <div className="form-group">
@@ -81,9 +119,8 @@ class Input extends React.Component {
             </div>
             <input type="number" step=".01" className="form-control"
               placeholder={this.defaultMinimumPayment} value={minimum_payment}
-              onChange={({ currentTarget: { value } }) => this.setState({ minimum_payment: this.parseDollar(value) })} />
+              onChange={(event) => this.setState({ minimum_payment: this.parseDollar(event.currentTarget.value) })} />
           </div>
-          {/*<small className="form-text text-muted">Minimum monthly payments (in dollars).</small>*/}
         </div>
 
         <div className="form-group">
@@ -96,7 +133,6 @@ class Input extends React.Component {
               placeholder={this.defaultLoanTerm} value={loan_term}
               onChange={({ currentTarget: { value } }) => this.setLoanTerm(value)} />
           </div>
-          {/*<small className="form-text text-muted">Minimum monthly payments (in dollars).</small>*/}
         </div>
       </React.Fragment>
     );
@@ -112,7 +148,10 @@ class Input extends React.Component {
           {this.body()}
         </div>
         <div className="card-footer">
-          <button type="submit" className="btn btn-outline-primary">Calculate</button>
+          <div className="row">
+            <button type="submit" className="col btn btn-outline-primary">Calculate</button>
+            <button type="button" className="col btn btn-outline-primary" onClick={() => this.clear()}>Clear</button>
+          </div>
         </div>
       </form>
     );
