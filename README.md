@@ -3,11 +3,10 @@
 This application is a loan calculator I built, partly because I needed one,
 and partly because I'm trying to learn react, bootstrap and javascript.
 
-# Thinks I've Learned or Practiced with this Project
+# Things I've Learned or Practiced with this Project
 
 ## React/Bootstrap
 - React doesn't need bootstrap
-- React can use bootstrap
 - There's bootstrap.css, bootstrap.js, and even React which re-implements
 bootstrap.
 - Just use arrow functions, no need to bind
